@@ -1,6 +1,32 @@
 <?php
 include_once('simple_html_dom.php');
 
+function index_page($work) {
+    $index = array();
+    $texto = '';
+    
+    foreach ($work as $key => $value) {
+        $texto .= $value;
+    }
+      
+    $work = trim($texto);
+    $work = explode(' ', $work);
+    natcasesort($work);
+    foreach ($work AS $key) {
+        $key = trim($key);
+        $key = strtolower($key);
+        $junk = preg_match('/[^a-zA-Z]/', $key);
+        if($junk == 1) {
+            $key = '';
+        }
+        if (!$index[$key]) $index[$key] = 0;
+        $index[$key]++;
+    }
+
+
+    return($index);
+}
+
 function scraping_letras($url_base, $matriz) {
 
     foreach ($matriz as $key => $value) {
@@ -12,10 +38,9 @@ function scraping_letras($url_base, $matriz) {
         unset($html);
     }
 
-    echo '<pre>';
-    print_r($letra);
+    $indexado = index_page($letra);
 
-    return true;
+    return $indexado;
 }
 
 function scraping_links($url) {
@@ -46,6 +71,10 @@ $url_artista = 'racionais-mcs';
 $links = scraping_links($url_base . $url_artista);
 
 $letras = scraping_letras($url_base, $links);
+
+echo '<pre>';
+print_r($letras);
+echo count($letras);
 
 // echo '<pre>';
 // print_r($links);
